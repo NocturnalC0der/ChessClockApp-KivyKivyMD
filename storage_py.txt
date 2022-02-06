@@ -1,5 +1,0 @@
-if not self.times_entered:
-
- self.times_entered = True
-            else:
-                self.change_screen()
