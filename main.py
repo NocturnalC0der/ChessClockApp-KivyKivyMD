@@ -16,7 +16,7 @@ from kivymd.uix.behaviors.backgroundcolor_behavior import BackgroundColorBehavio
 from kivymd.theming import ThemeManager
 
 
-Clock.max_iteration = 90
+Clock.max_iteration = 150
 
 '__version__' == '1.0.0'
 
