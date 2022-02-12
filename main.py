@@ -12,6 +12,7 @@ from kivymd.color_definitions import colors
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.core.audio import SoundLoader
 from kivymd.uix.behaviors.backgroundcolor_behavior import BackgroundColorBehavior
 from kivymd.theming import ThemeManager
 
@@ -51,6 +52,7 @@ class ChessClockApp(MDApp):
                         return time_top
                 else:   
                     return 'invalid'
+
         def change_time_bottom(self):
             time_bottom = self.ids.time_bottom.text
             digits = list(string.digits)
@@ -74,7 +76,6 @@ class ChessClockApp(MDApp):
             ChessClockApp.MainWindow.set_times(ChessClockApp.MainWindow, self.change_time_top(), self.change_time_bottom())
             self.initial_time_top = self.change_time_top()
             self.initial_time_bottom = self.change_time_bottom()
-            # treba popisat preco tu mam toto, bug s tym ze prepnem na druhy screen, dam ok, a casy su schedulenute dvakrat.
 
         def check_times(self):
             
@@ -85,13 +86,11 @@ class ChessClockApp(MDApp):
                     self.ids.invalid_time_message.text = 'Invalid time(s), try again.'
                     self.ids.time_top.text = ''
                     self.ids.time_bottom.text = ''
-                    print('error \n')
                 
                 else:
                     
                     self.change_screen()
                     self.change_times()
-                    print('change with set times \n')
 
                 self.times_entered = True
 
@@ -99,7 +98,6 @@ class ChessClockApp(MDApp):
                 self.change_screen()
                 if self.current_time_top == self.initial_time_top and self.current_time_bottom == self.initial_time_bottom:
                     self.change_times()
-                print('change with nothing \n')
 
     class MainWindow(Screen):
         timer_started_bottom = False
@@ -107,8 +105,11 @@ class ChessClockApp(MDApp):
         
         first_start_top = True
         first_start_bottom = True
+
         resume_bottom = False 
         resume_top = False
+
+        end = False
 
         initial_time_top = ''
         initial_time_bottom = ''
@@ -118,6 +119,9 @@ class ChessClockApp(MDApp):
         
         time_top = ''
         time_bottom = ''
+
+        game_over = SoundLoader.load('time_out_beep.wav')
+
 
         def sleep(self):
             time.sleep(3)
@@ -153,9 +157,14 @@ class ChessClockApp(MDApp):
                 
                 if timer_seconds_top == 00:
                     
-                    if self.button_top == '00:00':
+                    if timer_seconds_top == 00 and timer_minutes_top == 00:
+                        self.game_over.play()
+                        self.timer_started_top = False
+                        self.timer_started_bottom = False
+                        self.end = True
                         Clock.unschedule(self.start_countdown_top, 1)
                         Clock.unschedule(self.start_countdown_bottom, 1)
+
                         
                         
                     else:
@@ -173,8 +182,14 @@ class ChessClockApp(MDApp):
             timer_minutes_bottom = int(self.button_bottom.text[0] + self.button_bottom.text[1])
             
             if self.timer_started_bottom:
+
                 if timer_seconds_bottom == 00:
-                    if self.button_bottom == '00:00':
+
+                    if timer_seconds_bottom == 00 and timer_minutes_bottom == 00:
+                        self.game_over.play()
+                        self.timer_started_top = False
+                        self.timer_started_bottom = False
+                        self.end = True
                         Clock.unschedule(self.start_countdown_bottom, 1)
                         Clock.unschedule(self.start_countdown_top, 1)
                         
@@ -186,12 +201,10 @@ class ChessClockApp(MDApp):
                 else:
                     timer_seconds_bottom -= 1    
                 self.ids.button_bottom.text = f'{int(timer_minutes_bottom):02}:{int(timer_seconds_bottom):02}'
-                print('test countdown bottom')
 
 
         def switch_time_top(self):
-            print('switch time top 1', self.timer_started_bottom, self.timer_started_top)
-            if self.timer_started_top == False and self.timer_started_bottom == True or self.pause_resume.icon == 'play' or self.button_top == '00:00':    
+            if self.timer_started_top == False and self.timer_started_bottom == True or self.pause_resume.icon == 'play' or self.button_top == '00:00' or self.end == True:    
                 pass
             else: 
                 Clock.unschedule(self.start_countdown_top)
@@ -222,11 +235,9 @@ class ChessClockApp(MDApp):
                 self.initial_time_bottom = self.time_bottom
                 self.ids.button_top.disabled = True
                 self.ids.button_bottom.disabled = False
-            print('switch time top 1', self.timer_started_bottom, self.timer_started_top)
 
         def switch_time_bottom(self):
-            print('switch time botom 1' , self.timer_started_bottom, self.timer_started_top)
-            if self.timer_started_bottom == False and self.timer_started_top == True or self.pause_resume.icon == 'play' or self.button_bottom == '00:00':
+            if self.timer_started_bottom == False and self.timer_started_top == True or self.pause_resume.icon == 'play' or self.button_bottom == '00:00' or self.end == True:
                 pass            
             
             else: 
@@ -254,11 +265,9 @@ class ChessClockApp(MDApp):
                 self.initial_time_top = self.time_top
                 self.ids.button_top.disabled = False
                 self.ids.button_bottom.disabled = True
-            print('switch time botom 2', self.timer_started_bottom, self.timer_started_top)
 
 
         def pause_func(self):
-            print('pause1', self.timer_started_bottom, self.timer_started_top)
             
             if self.timer_started_top:
                 self.resume_top = True
@@ -268,7 +277,6 @@ class ChessClockApp(MDApp):
                 self.resume_bottom = True
                 self.timer_started_bottom = False
 
-            print('pause2', self.timer_started_bottom, self.timer_started_top, self.resume_top, self.resume_bottom)
 
             self.pause_resume.icon = 'play'
             self.ids.time_screen.disabled = False
@@ -276,7 +284,6 @@ class ChessClockApp(MDApp):
 
                 
         def resume(self):
-            print('resume 1', self.timer_started_bottom, self.timer_started_top)
             self.pause_resume.icon = 'pause'
             if self.resume_top:
                 self.timer_started_top = True
@@ -286,7 +293,6 @@ class ChessClockApp(MDApp):
                 self.timer_started_bottom = True
                 self.resume_bottom = False
 
-            print('resume 2', self.timer_started_bottom, self.timer_started_top)
             self.ids.time_screen.disabled = True
             self.reset_btn.disabled = True
             
