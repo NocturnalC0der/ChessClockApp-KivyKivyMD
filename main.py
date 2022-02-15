@@ -1,19 +1,12 @@
-from kivy.app import App
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.textinput import TextInput
 from kivy.core.window import Window
 from kivy.clock import Clock
-import string, time, threading
+import string
 from time import strftime, strptime
-from kivy.properties import ObjectProperty, StringProperty
-from kivymd.color_definitions import colors
+from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.core.audio import SoundLoader
-from kivymd.uix.behaviors.backgroundcolor_behavior import BackgroundColorBehavior
 from kivymd.theming import ThemeManager
 
 
@@ -121,10 +114,6 @@ class ChessClockApp(MDApp):
         time_bottom = ''
 
         game_over = SoundLoader.load('time_out_beep.wav')
-
-
-        def sleep(self):
-            time.sleep(3)
 
         def set_times(self, time_top, time_bottom, dt=0):
             if time_top =='invalid' or time_bottom == 'invalid':
