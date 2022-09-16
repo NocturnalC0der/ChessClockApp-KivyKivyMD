@@ -12,7 +12,8 @@ from kivymd.theming import ThemeManager
 
 Clock.max_iteration = 150
 
-__version__ == '1.0'
+
+# __version__ == '1.0'
 
 class WindowManager(ScreenManager):
     pass
