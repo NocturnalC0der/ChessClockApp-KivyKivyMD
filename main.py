@@ -324,3 +324,4 @@ class ChessClockApp(MDApp):
 
 if __name__ == '__main__':
     ChessClockApp().run()
+    
