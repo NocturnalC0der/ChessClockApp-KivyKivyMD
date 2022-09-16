@@ -39,7 +39,7 @@ class ChessClockApp(MDApp):
                 return 'invalid'
                 
             else:
-                if time_top[0] in digits and time_top[1] in digits and time_top[2] == ':' and time_top[3] in digits and time_top[4]:
+                if time_top[0] in digits and time_top[1] in digits and time_top[2] == ':' and time_top[3] in digits and time_top[4] in digits:
                     if int(time_top[3]) > 5:
                         return 'invalid'
                     else:
@@ -54,7 +54,7 @@ class ChessClockApp(MDApp):
                 return 'invalid'
             
             else: 
-                if time_bottom[0] in digits and time_bottom[1] in digits and time_bottom[2] == ':' and time_bottom[3] in digits and time_bottom[4]:
+                if time_bottom[0] in digits and time_bottom[1] in digits and time_bottom[2] == ':' and time_bottom[3] in digits and time_bottom[4] in digits:
                     if int(time_bottom[3]) > 5:
                         return 'invalid'
                     else:
